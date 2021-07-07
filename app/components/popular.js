@@ -1,5 +1,7 @@
 import React from 'react'
 
+const globalLanguages= ['All', 'Javascript', 'Ruby', 'Java', 'CSS', 'Python']
+
 export default class Popular extends React.Component {
     constructor(props) {
         super(props)
@@ -11,11 +13,10 @@ export default class Popular extends React.Component {
         this.selectLanguage = this.selectLanguage.bind(this);
     }
 
-    selectLanguage(selectedLanguage) {
+    selectLanguage(index) {
         this.setState({
-            selectedLanguage
+            selectedLanguage : globalLanguages[index]
         });
-        console.log(selectedLanguage);
     }
 
     render() {
@@ -23,9 +24,14 @@ export default class Popular extends React.Component {
 
         return(
             <ul className='flex-center'>
-                {languages.map((language, index) => (
+                {globalLanguages.map((language, index) => (
                     <li key={index}>
-                        <button className='btn-clear nav-link' onClick={() => this.selectLanguage(language)}>{language}</button>
+                        <button
+                        className='btn-clear nav-link'
+                        style={language === this.state.selectedLanguage ? {color: 'rgb(187, 46, 31)'} : null}
+                        onClick={() => this.selectLanguage(index)}>
+                            {language}
+                        </button>
                     </li>
                 ))}
             </ul>

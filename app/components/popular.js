@@ -41,7 +41,7 @@ export default class Popular extends React.Component {
     }
 
     componentDidMount() {
-        this.selectLanguage(0)
+        this.selectLanguage(this.state.selectedLanguageIndex)
     }
 
     selectLanguage(index) {

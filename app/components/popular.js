@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { fetchPopularRepos } from '../utils/api'
 
 const globalLanguages= ['All', 'Javascript', 'Ruby', 'Java', 'CSS', 'Python']
 
@@ -21,7 +22,7 @@ function LanguagesNav({selected, onUpdateLanguage}) {
 }
 
 LanguagesNav.propTypes = {
-    selected: PropTypes.bool.isRequired,
+    selected: PropTypes.string.isRequired,
     onUpdateLanguage: PropTypes.func.isRequired
 }
 
@@ -30,24 +31,55 @@ export default class Popular extends React.Component {
         super(props)
 
         this.state = {
-            selectedLanguage: 'All'
+            selectedLanguage: 'All',
+            repos: null,
+            error: null
         }
 
-        this.selectLanguage = this.selectLanguage.bind(this);
+        this.selectLanguage = this.selectLanguage.bind(this)
+        this.isLoading = this.isLoading.bind(this)
+    }
+
+    componentDidMount() {
+        this.selectLanguage(0)
     }
 
     selectLanguage(index) {
         this.setState({
-            selectedLanguage : globalLanguages[index]
+            selectedLanguage : globalLanguages[index],
+            error: null,
+            repos: null
         });
+
+        fetchPopularRepos(globalLanguages[index])
+            .then((repos) => this.setState({
+                repos,
+                error: null
+            }))
+            .catch(() => {
+                console.warn('Error fetching repos: ', error)
+                this.setState({
+                    error: 'There was an error fetching the repositories.'
+                })
+            })
+    }
+
+    isLoading() {
+        return this.state.repos === null && this.state.error === null
     }
 
     render() {
-        const { selectedLanguage } = this.state
+        const { selectedLanguage, repos, error } = this.state
 
         return (
             <React.Fragment>
                 <LanguagesNav selected={selectedLanguage} onUpdateLanguage={this.selectLanguage} />
+
+                {this.isLoading() && <p>LOADING...</p>}
+
+                {error && <p>{error}</p>}
+
+                {repos && <pre>{JSON.stringify(repos, null, 2)}</pre>}
             </React.Fragment>
             
         )

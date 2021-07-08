@@ -31,7 +31,7 @@ export default class Popular extends React.Component {
         super(props)
 
         this.state = {
-            selectedLanguage: 'All',
+            selectedLanguageIndex: 0,
             repos: null,
             error: null
         }
@@ -46,7 +46,7 @@ export default class Popular extends React.Component {
 
     selectLanguage(index) {
         this.setState({
-            selectedLanguage : globalLanguages[index],
+            selectedLanguageIndex : index,
             error: null,
             repos: null
         });
@@ -69,11 +69,11 @@ export default class Popular extends React.Component {
     }
 
     render() {
-        const { selectedLanguage, repos, error } = this.state
+        const { selectedLanguageIndex, repos, error } = this.state
 
         return (
             <React.Fragment>
-                <LanguagesNav selected={selectedLanguage} onUpdateLanguage={this.selectLanguage} />
+                <LanguagesNav selected={globalLanguages[selectedLanguageIndex]} onUpdateLanguage={this.selectLanguage} />
 
                 {this.isLoading() && <p>LOADING...</p>}
 

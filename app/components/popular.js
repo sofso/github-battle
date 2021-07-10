@@ -32,7 +32,7 @@ export default class Popular extends React.Component {
 
         this.state = {
             selectedLanguageIndex: 0,
-            repos: null,
+            repos: {},
             error: null
         }
 
@@ -47,25 +47,33 @@ export default class Popular extends React.Component {
     selectLanguage(index) {
         this.setState({
             selectedLanguageIndex : index,
-            error: null,
-            repos: null
+            error: null
         });
 
-        fetchPopularRepos(globalLanguages[index])
-            .then((repos) => this.setState({
-                repos,
-                error: null
-            }))
-            .catch(() => {
+        if(!this.state.repos[globalLanguages[index]]) {
+            fetchPopularRepos(globalLanguages[index])
+            .then((data) => {
+                this.setState(({ repos }) => ({
+                    repos: {
+                        ...repos,
+                        [globalLanguages[index]]: data
+                    }
+                }))
+            })
+            .catch((error) => {
                 console.warn('Error fetching repos: ', error)
+                
                 this.setState({
                     error: 'There was an error fetching the repositories.'
                 })
             })
+        }
     }
 
     isLoading() {
-        return this.state.repos === null && this.state.error === null
+        const {selectedLanguageIndex, repos, error} = this.state
+
+        return !repos[globalLanguages[selectedLanguageIndex]] && error === null
     }
 
     render() {
@@ -79,7 +87,7 @@ export default class Popular extends React.Component {
 
                 {error && <p>{error}</p>}
 
-                {repos && <pre>{JSON.stringify(repos, null, 2)}</pre>}
+                {repos[globalLanguages[selectedLanguageIndex]] && <pre>{JSON.stringify(repos[globalLanguages[selectedLanguageIndex]], null, 2)}</pre>}
             </React.Fragment>
             
         )
